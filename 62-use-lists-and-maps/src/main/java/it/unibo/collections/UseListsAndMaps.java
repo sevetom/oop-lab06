@@ -1,9 +1,11 @@
 package it.unibo.collections;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Example class using {@link List} and {@link Map}.
@@ -13,7 +15,7 @@ public final class UseListsAndMaps {
 
     private static final int N1 = 1000;
     private static final int N2 = 2000;
-    private static final int N3 = 100000;
+    private static final int N3 = 100_000;
 
     private UseListsAndMaps() {
     }
@@ -58,27 +60,14 @@ public final class UseListsAndMaps {
          * using the previous lists. In order to measure times, use as example
          * TestPerformance.java.
          */
-        long time = System.nanoTime();
-        for (int i = 0; i < N3; i++) {
-            list1.add(i);
-        }
-        time = System.nanoTime() - time;
-        final var millis = TimeUnit.NANOSECONDS.toMillis(time);
-        System.out.println(// NOPMD
-            "Converting "
-                + set.size()
-                + " ints to String and inserting them in a Set took "
-                + time
-                + "ns ("
-                + millis
-                + "ms)"
-        );
+        TimePerformance(list1, "add", UseListsAndMaps.N3);
         /*
          * 6) Measure the performance of reading 1000 times an element whose
          * position is in the middle of the collection for both ArrayList and
          * LinkedList, using the collections of point 5. In order to measure
          * times, use as example PerfTest.java.
          */
+        TimePerformance(list2, "read", UseListsAndMaps.N1);
         /*
          * 7) Build a new Map that associates to each continent's name its
          * population:
@@ -98,5 +87,43 @@ public final class UseListsAndMaps {
         /*
          * 8) Compute the population of the world
          */
+        final Map<String, Long> map = new HashMap<>();
+        map.put("Africa", 1_110_635_000L);
+        map.put("Americas", 972_005_000L);
+        map.put("Antarctica", 0L);
+        map.put("Asia", 4_298_723_000L);
+        map.put("Europe", 742_452_000L);
+        map.put("Oceania", 38_304_000L);
+
+        Long worldPop = 0L;
+        for (final Long person : map.values()) {
+            worldPop += person;
+        }
+        System.out.println("The world Population is " + worldPop);
+    }
+
+    static void TimePerformance(List<Integer> list, String type, int repetitions) {
+        long time = System.nanoTime();
+        if (type == "add") {
+            for (int i = 0; i < repetitions; i++) {
+                list.add(i);
+            }
+        } else {
+            int mid = list.size() / 2;
+            for (int i = 0; i < repetitions; i++) {
+                list.get(mid);
+            }
+        }
+        time = System.nanoTime() - time;
+        final var millis = TimeUnit.NANOSECONDS.toMillis(time);
+        System.out.println(
+            "In a list long "
+                + list.size() + " "
+                + type + "ing " + repetitions + " took "
+                + time
+                + "ns ("
+                + millis
+                + "ms)"
+        );
     }
 }
