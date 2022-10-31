@@ -1,9 +1,12 @@
 package it.unibo.generics.graph.impl;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 import java.util.Set;
 
 import it.unibo.generics.graph.api.Graph;
@@ -47,7 +50,34 @@ public class GraphImpl<V> implements Graph<V>{
 
     @Override
     public List<V> getPath(final V source, final V target) {
-        
-        return null;
+        final List<V> path = new LinkedList<>();
+        final Queue<V> q = new LinkedList<>();
+        final Map<V, Boolean> visited = new LinkedHashMap<V, Boolean>();
+        final Map<V, V> previous = new LinkedHashMap<V, V>();
+        V current = source;
+        q.add(current);
+        visited.put(current, true);
+        while(!q.isEmpty()){
+            current = q.remove();
+            if (current.equals(target)){
+                break;
+            }else{
+                for(final V node : edges.get(current)){
+                    if(!visited.containsKey(node.hashCode())){
+                        q.add(node);
+                        visited.put(node, true);
+                        previous.put(node, current);
+                    }
+                }
+            }
+        }
+        if (!current.equals(target)){
+            System.out.println("can't reach destination");
+        }
+        for(V node = target; node != null; node = previous.get(node)) {
+            path.add(node);
+        }
+        Collections.reverse(path);
+        return path;
     }
 }
