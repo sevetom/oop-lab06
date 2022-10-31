@@ -49,22 +49,23 @@ public class GraphImpl<V> implements Graph<V>{
     }
 
     @Override
+    // uses BFS
     public List<V> getPath(final V source, final V target) {
         final List<V> path = new LinkedList<>();
-        final Queue<V> q = new LinkedList<>();
+        final Queue<V> queue = new LinkedList<>();
         final Map<V, Boolean> visited = new LinkedHashMap<V, Boolean>();
         final Map<V, V> previous = new LinkedHashMap<V, V>();
         V current = source;
-        q.add(current);
+        queue.add(current);
         visited.put(current, true);
-        while(!q.isEmpty()){
-            current = q.remove();
+        while(!queue.isEmpty()){
+            current = queue.remove();
             if (current.equals(target)){
                 break;
             }else{
                 for(final V node : edges.get(current)){
                     if(!visited.containsKey(node.hashCode())){
-                        q.add(node);
+                        queue.add(node);
                         visited.put(node, true);
                         previous.put(node, current);
                     }
@@ -72,7 +73,7 @@ public class GraphImpl<V> implements Graph<V>{
             }
         }
         if (!current.equals(target)){
-            System.out.println("can't reach destination");
+            System.out.println("Node " + target +" is unreachable");
         }
         for(V node = target; node != null; node = previous.get(node)) {
             path.add(node);
